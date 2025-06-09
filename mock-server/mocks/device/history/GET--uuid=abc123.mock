@@ -1,0 +1,19 @@
+﻿HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+  "history": [
+    {
+      "timestamp": "2025-05-31T14:23:45Z",
+      "status": "ON"
+    },
+    {
+      "timestamp": "2025-05-31T14:20:00Z",
+      "status": "OFF"
+    },
+    {
+      "timestamp": "2025-05-31T14:15:30Z",
+      "status": "ON"
+    }
+  ]
+}

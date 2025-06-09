@@ -1,0 +1,7 @@
+﻿HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+  "status": "ON",
+  "lastChange": "2025-05-31T14:23:45Z"
+}
