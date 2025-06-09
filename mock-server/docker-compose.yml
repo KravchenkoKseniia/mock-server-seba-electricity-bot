@@ -6,7 +6,7 @@ services:
       - ./mocks:/config
     container_name: mock-server
     ports:
-      - "1080:1080"
+      - "8080:8080"
     command:
       - "-serverPort"
       - "1080"

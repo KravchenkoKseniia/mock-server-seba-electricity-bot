@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "start-mock": "mockserver -p 8080 -m mocks"
+    "start-mock": "npx mockserver -p 8080 -m mocks"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
