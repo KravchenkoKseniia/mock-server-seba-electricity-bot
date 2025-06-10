@@ -2,16 +2,24 @@
   "name": "mock-server",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "start-mock": "npx mockserver -p 8080 -m mocks"
+    "dev": "concurrently \"npm:dev:vite\" \"npm:dev:server\"",
+    "dev:vite": "vite",
+    "dev:server": "ts-node --transpile-only src/mock-server/mockServer.ts"
   },
   "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.30",
     "concurrently": "^9.1.2",
+    "ts-node": "^10.9.2",
     "typescript": "~5.8.3",
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.5.1",
+    "express": "^5.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   }
 }
