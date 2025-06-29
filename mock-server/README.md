@@ -34,6 +34,7 @@ The Express server endpoints will be available at `http://localhost:8080`.
 - `POST /device/register` — Register a device
 - `GET /device/status?uuid=...` — Get device status
 - `GET /device/history?uuid=...` — Get device status history
+- `DELETE /device?uuid=...` — Delete a device
 
 ## How to Add or Modify Responses
 
