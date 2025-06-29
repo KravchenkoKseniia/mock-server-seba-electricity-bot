@@ -36,26 +36,51 @@ app.post('/login', (req: Request, res: Response): Response => {
 // POST /device/register
 // @ts-ignore
 app.post('/device/register', (req: Request, res: Response): Response => {
-    const { uuid, token } = req.body;
+    const { uuid } = req.body;
+    const token = getTokenFromHeader(req);
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
     const user = users.find(u => u.token === token);
+
     if (!user) {
         return res.status(403).json({ error: 'Forbidden' });
     }
 
-    if (!devices.find(d => d.uuid === uuid)) {
+    if (!devices.find(device => device.uuid === uuid)) {
         devices.push({ uuid, owner: user.email });
         statusHistory[uuid] = [
-            { timestamp: new Date().toISOString(), status: 'OFF' }
+            { timestamp: new Date().toISOString(), status: 'OFF' } // Initial status
         ];
     }
 
-    return res.status(200).json({ message: 'Device registered' });
+    return res.status(200).json({ message: 'Device registered successfully' });
 });
 
 // GET /device/status
 // @ts-ignore
 app.get('/device/status', (req: Request, res: Response): Response => {
     const uuid = req.query.uuid as string;
+    const token = getTokenFromHeader(req);
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = users.find(u => u.token === token);
+
+    if (!user) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const device = devices.find(d => d.uuid === uuid && d.owner === user.email);
+
+    if (!device) {
+        return res.status(404).json({ error: 'Device not found' });
+    }
+
     const history = statusHistory[uuid];
     if (!history) {
         return res.status(404).json({ error: 'Device not found' });
@@ -72,6 +97,25 @@ app.get('/device/status', (req: Request, res: Response): Response => {
 // @ts-ignore
 app.get('/device/history', (req: Request, res: Response): Response => {
     const uuid = req.query.uuid as string;
+
+    const token = getTokenFromHeader(req);
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = users.find(u => u.token === token);
+
+    if (!user) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const device = devices.find(d => d.uuid === uuid && d.owner === user.email);
+
+    if (!device) {
+        return res.status(404).json({ error: 'Device not found' });
+    }
+
     const history = statusHistory[uuid];
     if (!history) {
         return res.status(404).json({ error: 'Device not found' });
@@ -79,6 +123,35 @@ app.get('/device/history', (req: Request, res: Response): Response => {
 
     return res.status(200).json({ history });
 });
+
+// DELETE /device
+// @ts-ignore
+
+app.delete('/device', (req: Request, res: Response): Response => {
+    const { uuid, token } = req.body;
+    const user = users.find(u => u.token === token);
+    if (!user) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    const deviceIndex = devices.findIndex(d => d.uuid === uuid && d.owner === user.email);
+    if (deviceIndex === -1) {
+        return res.status(404).json({ error: 'Device not found' });
+    }
+    devices.splice(deviceIndex, 1);
+    delete statusHistory[uuid];
+    return res.status(200).json({ message: 'Device deleted' });
+});
+
+
+const getTokenFromHeader = (req: Request): string | null => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return null;
+    }
+    return authHeader.substring(7);
+}
+
 
 app.listen(PORT, () => {
     console.log(`Mock server is running at http://localhost:${PORT}`);
