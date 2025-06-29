@@ -13,6 +13,14 @@ function generateToken(): string {
     return Math.random().toString(36).substring(2);
 }
 
+const getTokenFromHeader = (req: Request): string | null => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return null;
+    }
+    return authHeader.substring(7);
+}
+
 // POST /register
 // @ts-ignore
 app.post('/register', (req: Request, res: Response): Response => {
@@ -149,16 +157,6 @@ app.delete('/device', (req: Request, res: Response): Response => {
     delete statusHistory[uuid];
     return res.status(200).json({ message: 'Device deleted' });
 });
-
-
-const getTokenFromHeader = (req: Request): string | null => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return null;
-    }
-    return authHeader.substring(7);
-}
-
 
 app.listen(PORT, () => {
     console.log(`Mock server is running at http://localhost:${PORT}`);
