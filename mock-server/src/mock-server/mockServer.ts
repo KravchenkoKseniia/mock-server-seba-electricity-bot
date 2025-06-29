@@ -128,7 +128,14 @@ app.get('/device/history', (req: Request, res: Response): Response => {
 // @ts-ignore
 
 app.delete('/device', (req: Request, res: Response): Response => {
-    const { uuid, token } = req.body;
+    const { uuid } = req.body;
+
+    const token = getTokenFromHeader(req);
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
     const user = users.find(u => u.token === token);
     if (!user) {
         return res.status(403).json({ error: 'Forbidden' });
