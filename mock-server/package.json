@@ -9,6 +9,7 @@
     "dev:server": "ts-node --transpile-only src/mock-server/mockServer.ts"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^22.15.30",
     "concurrently": "^9.1.2",
@@ -18,8 +19,10 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.5.1",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "uuid": "^11.1.0"
   }
 }

@@ -31,10 +31,12 @@ The Express server endpoints will be available at `http://localhost:8080`.
 ## API Endpoints
 - `POST /register` — Register a new user
 - `POST /login` — Login with email and password
-- `POST /device/register` — Register a device
-- `GET /device/status?uuid=...` — Get device status
-- `GET /device/history?uuid=...` — Get device status history
-- `DELETE /device?uuid=...` — Delete a device
+- `GET /user/me` — Get current user info (requires Bearer token)
+- `POST /devices/register` — Register a device (requires Bearer token)
+- `GET /device/status?uuid=...` — Get device status (requires Bearer token)
+- `GET /devices?uuid=...` — Get device status history (requires Bearer token)
+- `GET /devices?email=...` — List all devices for a user (requires Bearer token)
+- `DELETE /devices/delete` — Delete a device (requires Bearer token, pass `{ uuid }` in body)
 
 ## How to Add or Modify Responses
 
