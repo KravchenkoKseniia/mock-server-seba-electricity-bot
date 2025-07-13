@@ -1,11 +1,15 @@
 ﻿import express, { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import cors from 'cors';
+import path from 'path';
+import multer from 'multer';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+const upload = multer({ dest: path.join(__dirname, 'uploads/') });
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const PORT = 8080;
 
 interface User {
@@ -101,6 +105,71 @@ app.get('/user/me', (req, res) => {
     res.status(200).json(userWithoutPassword);
 });
 
+// PUT /user/me
+// @ts-ignore
+app.put('/user/me', (req, res) => {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = users.find(u => u.token === token);
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { firstName, lastName, gender, timeZone } = req.body;
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (gender) user.gender = gender;
+    if (timeZone) user.timeZone = timeZone;
+
+    const { password: _, ...userWithoutPassword } = user;
+    res.status(200).json(userWithoutPassword);
+});
+
+// POST /user/avatar
+// @ts-ignore
+app.post('/user/avatar', upload.single('avatar'), (req, res) => {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = users.find(u => u.token === token);
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    user.avatar = `/uploads/${req.file.filename}`;
+
+    const { password: _, ...userWithoutPassword } = user;
+    res.status(200).json(userWithoutPassword);
+});
+
+// DELETE /user/avatar
+// @ts-ignore
+
+app.delete('/user/avatar', (req, res) => {
+    const token = getTokenFromHeader(req);
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = users.find(u => u.token === token);
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    delete user.avatar;
+    const { password: _, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+});
+
 // DEVICES
 
 // POST /devices/register
@@ -123,7 +192,7 @@ app.post('/devices/register', (req, res) => {
    }
 
    if(!devices.find(device => device.uuid === uuid)) {
-       devices.push({ uuid, name, ownerEmail: user.id });
+       devices.push({ uuid, name, ownerEmail: user.email });
 
          statusHistory[uuid] = [{
                 timestamp: new Date().toISOString(),
@@ -136,7 +205,7 @@ app.post('/devices/register', (req, res) => {
 
 // GET /devices/status
 // @ts-ignore
-app.get('/device/status', (req, res) => {
+app.get('/devices/status', (req, res) => {
     const uuid = req.query.uuid as string;
     const token = getTokenFromHeader(req);
     if (!token) return res.status(401).json({ error: 'Unauthorized' });

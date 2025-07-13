@@ -29,11 +29,14 @@ This will start both the Vite frontend (if present) and the mock Express server 
 The Express server endpoints will be available at `http://localhost:8080`.
 
 ## API Endpoints
-- `POST /register` — Register a new user
-- `POST /login` — Login with email and password
-- `GET /user/me` — Get current user info (requires Bearer token)
-- `POST /devices/register` — Register a device (requires Bearer token)
-- `GET /device/status?uuid=...` — Get device status (requires Bearer token)
+- `POST /register` — Register a new user. Required fields: `firstName`, `lastName`, `email`, `password`, `gender`. Returns user info and token.
+- `POST /login` — Login with credentials. Required fields: `username` (email), `password`. Returns user info and token.
+- `GET /user/me` — Get current user info (requires Bearer token).
+- `PUT /user/me` — Update user info (requires Bearer token). Accepts: `firstName`, `lastName`, `gender`, `timeZone`.
+- `POST /user/avatar` — Upload user avatar (multipart/form-data, field: `avatar`, requires Bearer token).
+- `DELETE /user/avatar` — Remove user avatar (requires Bearer token).
+- `POST /devices/register` — Register a device. Required: `uuid`, `name` (requires Bearer token).
+- `GET /devices/status?uuid=...` — Get device status (requires Bearer token).
 - `GET /devices?uuid=...` — Get device status history (requires Bearer token)
 - `GET /devices?email=...` — List all devices for a user (requires Bearer token)
 - `DELETE /devices/delete` — Delete a device (requires Bearer token, pass `{ uuid }` in body)
@@ -65,4 +68,5 @@ The Express server endpoints will be available at `http://localhost:8080`.
 ---
 
 Feel free to contribute or modify as needed for your project!
+
 
